@@ -7,4 +7,5 @@ const express_1 = require("express");
 const claude_ai_controllers_1 = __importDefault(require("./claude-ai.controllers"));
 const router = (0, express_1.Router)();
 router.post("/unimed/send", claude_ai_controllers_1.default.sendUnimed);
+router.post("/unibook/send", claude_ai_controllers_1.default.sendUnimed);
 exports.default = router;
