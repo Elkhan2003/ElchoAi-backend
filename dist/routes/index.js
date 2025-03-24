@@ -7,15 +7,7 @@ const express_1 = require("express");
 const cors_1 = __importDefault(require("cors"));
 const claude_ai_routes_1 = __importDefault(require("../modules/claude-ai/claude-ai.routes"));
 const corsConfig = {
-    origin: [
-        "http://localhost:3000",
-        "http://localhost:5000",
-        "http://localhost:5173",
-        "https://elcho.dev",
-        "https://web-unimed.elcho.dev",
-        "https://patient-unimed.vercel.app",
-        "https://unimed-next.vercel.app",
-    ],
+    origin: "*",
     // credentials: true,
 };
 const router = (0, express_1.Router)();
