@@ -114,7 +114,7 @@ const sendUnicorn = async (req, res) => {
     catch (e) {
         res.status(500).send({
             success: false,
-            message: `Error in sendUnimed: ${e}`,
+            message: `Error in sendUnicorn: ${e}`,
         });
     }
 };
