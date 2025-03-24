@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Anthropic from "@anthropic-ai/sdk";
-import { formatClaudeAiError } from "../../middleware/formatClaudeAiError";
 
 const client = new Anthropic({
 	apiKey: process.env.ANTHROPIC_API_KEY || "",
