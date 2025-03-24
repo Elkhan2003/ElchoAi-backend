@@ -5,5 +5,6 @@ const router = Router();
 
 router.post("/unimed/send", claudeAiControllers.sendUnimed);
 router.post("/unibook/send", claudeAiControllers.sendUnimed);
+router.post("/unicorn/send", claudeAiControllers.sendUnicorn);
 
 export default router;
