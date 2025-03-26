@@ -32,9 +32,12 @@ const sendUnimed = async (req, res) => {
                 messages: filteredMessages,
                 model: "claude-3-5-haiku-20241022",
             });
+            const { content } = message;
             res.status(201).send({
                 success: true,
-                results: message,
+                results: {
+                    content,
+                },
             });
         }
         catch (e) {
@@ -99,9 +102,12 @@ const sendUnicorn = async (req, res) => {
                 messages: filteredMessages,
                 model: "claude-3-5-haiku-20241022",
             });
+            const { content } = message;
             res.status(201).send({
                 success: true,
-                results: message,
+                results: {
+                    content,
+                },
             });
         }
         catch (e) {
