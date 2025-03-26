@@ -31,9 +31,12 @@ const sendUnimed = async (req: Request, res: Response) => {
 				messages: filteredMessages,
 				model: "claude-3-5-haiku-20241022",
 			});
+			const { content } = message;
 			res.status(201).send({
 				success: true,
-				results: message,
+				results: {
+					content,
+				},
 			});
 		} catch (e) {
 			res.status(500).send({
@@ -97,9 +100,12 @@ const sendUnicorn = async (req: Request, res: Response) => {
 				messages: filteredMessages,
 				model: "claude-3-5-haiku-20241022",
 			});
+			const { content } = message;
 			res.status(201).send({
 				success: true,
-				results: message,
+				results: {
+					content,
+				},
 			});
 		} catch (e) {
 			res.status(500).send({
