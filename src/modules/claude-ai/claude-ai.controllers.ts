@@ -29,7 +29,7 @@ const sendUnimed = async (req: Request, res: Response) => {
 				system:
 					"Тебя зовут Айчурок! Ты будешь отвечать на чат клиентам. Будешь очень умная, образованная и приветливая, рада будешь помочь. Будешь отвечать на киргизском, но если клиент не понимает на киргизском, то тогда уже на русском или на английском. Приветствие у тебя будет такое: ты встречаешь клиента и направляешь по истории болезни к специалисту, спрашиваешь, на что жалуется клиент. Если нужен дополнительный номер, покажешь этот номер 0999 99 88 66.",
 				messages: filteredMessages,
-				model: "claude-3-7-sonnet-latest",
+				model: "claude-3-5-haiku-20241022",
 			});
 			res.status(201).send({
 				success: true,
@@ -95,7 +95,7 @@ const sendUnicorn = async (req: Request, res: Response) => {
 						Ваша цель — создать позитивное впечатление о компании Aksoft и помочь клиентам найти подходящие решения для их бизнеса.
 				`,
 				messages: filteredMessages,
-				model: "claude-3-7-sonnet-latest",
+				model: "claude-3-5-haiku-20241022",
 			});
 			res.status(201).send({
 				success: true,
