@@ -3,6 +3,12 @@ config();
 import express from "express";
 import routes from "./routes";
 
+if (process.env.TELEGRAM_BOT_ACTIVE === "yes") {
+	import("./bots/telegram/bot").catch((error) =>
+		console.error("Ошибка импорта бота:", error)
+	);
+}
+
 export const buildServer = () => {
 	const server = express();
 

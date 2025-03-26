@@ -8,7 +8,6 @@ const client = new Anthropic({
 const sendUnimed = async (req: Request, res: Response) => {
 	try {
 		const { conversationHistory } = req.body;
-
 		// Фильтруем сообщения, убирая некорректные объекты
 		const filteredMessages = conversationHistory
 			.filter((msg: any) => msg.content && msg.role) // Оставляем только валидные
@@ -16,7 +15,6 @@ const sendUnimed = async (req: Request, res: Response) => {
 				role: msg.role,
 				content: msg.content,
 			}));
-
 		// Если после фильтрации сообщений нет — ошибка
 		if (filteredMessages.length === 0) {
 			res.status(400).send({
@@ -25,7 +23,6 @@ const sendUnimed = async (req: Request, res: Response) => {
 			});
 			return;
 		}
-
 		try {
 			const message = await client.messages.create({
 				max_tokens: 1024,
@@ -34,7 +31,6 @@ const sendUnimed = async (req: Request, res: Response) => {
 				messages: filteredMessages,
 				model: "claude-3-7-sonnet-latest",
 			});
-
 			res.status(201).send({
 				success: true,
 				results: message,
