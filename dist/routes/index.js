@@ -11,5 +11,5 @@ const corsConfig = {
     // credentials: true,
 };
 const router = (0, express_1.Router)();
-router.use("/claude-ai", (0, cors_1.default)(corsConfig), claude_ai_routes_1.default);
+router.use("/message", (0, cors_1.default)(corsConfig), claude_ai_routes_1.default);
 exports.default = router;

@@ -9,6 +9,6 @@ const corsConfig = {
 
 const router = Router();
 
-router.use("/claude-ai", cors(corsConfig), claudeAiRoutes);
+router.use("/message", cors(corsConfig), claudeAiRoutes);
 
 export default router;
