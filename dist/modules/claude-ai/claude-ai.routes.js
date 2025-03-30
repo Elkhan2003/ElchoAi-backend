@@ -9,4 +9,5 @@ const router = (0, express_1.Router)();
 router.post("/unimed/send", claude_ai_controllers_1.default.sendUnimed);
 router.post("/unibook/send", claude_ai_controllers_1.default.sendUnimed);
 router.post("/unicorn/send", claude_ai_controllers_1.default.sendUnicorn);
+router.post("/akylman/send", claude_ai_controllers_1.default.sendAkylman);
 exports.default = router;
