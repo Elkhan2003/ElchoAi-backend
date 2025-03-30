@@ -21,4 +21,3 @@ bot.on("new_chat_members", async (msg) => handleNewChatMembers(bot, msg));
 console.log("Бот запущен!");
 
 export default bot;
- 
