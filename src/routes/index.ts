@@ -9,6 +9,6 @@ const corsConfig = {
 
 const router = Router();
 
-router.use("/message", cors(corsConfig), claudeAiRoutes);
+router.use("/aksoft-ai", cors(corsConfig), claudeAiRoutes);
 
 export default router;
