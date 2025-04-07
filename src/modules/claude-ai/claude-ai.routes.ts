@@ -7,5 +7,6 @@ router.post("/unimed/send", claudeAiControllers.sendUnimed);
 router.post("/unibook/send", claudeAiControllers.sendUnimed);
 router.post("/unicorn/send", claudeAiControllers.sendUnicorn);
 router.post("/akylman/send", claudeAiControllers.sendAkylman);
+router.post("/elcho_dev/send", claudeAiControllers.sendElchoDev);
 
 export default router;
