@@ -4,9 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const client = new sdk_1.default({
+const claudeAI = new sdk_1.default({
     apiKey: process.env.ANTHROPIC_API_KEY || "",
 });
+const genai_1 = require("@google/genai");
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const geminiAI = new genai_1.GoogleGenAI({ apiKey: GEMINI_API_KEY });
 const sendUnimed = async (req, res) => {
     try {
         const { conversationHistory } = req.body;
@@ -26,7 +29,7 @@ const sendUnimed = async (req, res) => {
             return;
         }
         try {
-            const message = await client.messages.create({
+            const message = await claudeAI.messages.create({
                 max_tokens: 1024,
                 system: "Тебя зовут Айчурок! Ты будешь отвечать на чат клиентам. Будешь очень умная, образованная и приветливая, рада будешь помочь. Будешь отвечать на киргизском, но если клиент не понимает на киргизском, то тогда уже на русском или на английском. Приветствие у тебя будет такое: ты встречаешь клиента и направляешь по истории болезни к специалисту, спрашиваешь, на что жалуется клиент. Если нужен дополнительный номер, покажешь этот номер 0999 99 88 66.",
                 messages: filteredMessages,
@@ -73,7 +76,7 @@ const sendUnicorn = async (req, res) => {
             return;
         }
         try {
-            const message = await client.messages.create({
+            const message = await claudeAI.messages.create({
                 max_tokens: 1024,
                 system: `
 Вы — дружелюбный и профессиональный ассистент компании Aksoft, основанной в 2022 году. 
@@ -143,7 +146,7 @@ const sendAkylman = async (req, res) => {
             return;
         }
         try {
-            const message = await client.messages.create({
+            const message = await claudeAI.messages.create({
                 max_tokens: 1024,
                 system: `
 # Системный промпт для чат-бота "Акылман"
@@ -339,28 +342,71 @@ const sendAkylman = async (req, res) => {
         });
     }
 };
-const sendElchoDev = async (req, res) => {
-    try {
-        const { conversationHistory } = req.body;
-        // Фильтруем сообщения, убирая некорректные объекты
-        const filteredMessages = conversationHistory
-            .filter((msg) => msg.content && msg.role) // Оставляем только валидные
-            .map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-        }));
-        // Если после фильтрации сообщений нет — ошибка
-        if (filteredMessages.length === 0) {
-            res.status(400).send({
-                success: false,
-                message: "conversationHistory не содержит валидных сообщений",
-            });
-            return;
-        }
-        try {
-            const message = await client.messages.create({
-                max_tokens: 1024,
-                system: `
+// const sendElchoDev = async (req: Request, res: Response) => {
+// 	try {
+// 		const { conversationHistory } = req.body;
+// 		// Фильтруем сообщения, убирая некорректные объекты
+// 		const filteredMessages = conversationHistory
+// 			.filter((msg: any) => msg.content && msg.role) // Оставляем только валидные
+// 			.map((msg: any) => ({
+// 				role: msg.role,
+// 				content: msg.content,
+// 			}));
+// 		// Если после фильтрации сообщений нет — ошибка
+// 		if (filteredMessages.length === 0) {
+// 			res.status(400).send({
+// 				success: false,
+// 				message: "conversationHistory не содержит валидных сообщений",
+// 			});
+// 			return;
+// 		}
+// 		try {
+// 			const message = await claudeAI.messages.create({
+// 				max_tokens: 1024,
+// 				system: `
+// Вы — дружелюбный и профессиональный ассистент компании ElchoDev, основанной в 2025 году.
+// Ваша основная задача — помогать клиентам, отвечая на их вопросы о разработке инновационных IT-решений для бизнеса.
+// Основная информация:
+// - Компания: ElchoDev (основана в 2025 году)
+// - Специализация: разработка инновационных IT-решений для бизнеса
+// - Email для связи: boss.armsport@gmail.com
+// - Телефон: +996990385056
+// Стиль общения:
+// - Профессиональный, но дружелюбный
+// - Приветствуется уместный юмор
+// - Всегда предлагайте конкретные решения
+// - В конце ответа, если это уместно, предлагайте контактную информацию (email или телефон)
+// - Не говори про ClaudeAI, antropic (говори ElchoAI)
+// На технические и специализированные вопросы отвечайте компетентно, но доступным языком.
+// Если не знаете точного ответа на вопрос клиента, предложите связаться с командой ElchoDev по указанным контактам.
+// При запросах о ценах, сроках или специфических проектах запрашивайте дополнительную информацию
+// и предлагайте связаться с менеджером для получения детальной консультации.
+// Ваша цель — создать позитивное впечатление о компании ElchoDev и помочь клиентам найти подходящие решения для их бизнеса.
+// `,
+// 				messages: filteredMessages,
+// 				model: "claude-3-5-haiku-20241022",
+// 			});
+// 			const { content } = message;
+// 			res.status(201).send({
+// 				success: true,
+// 				results: {
+// 					content,
+// 				},
+// 			});
+// 		} catch (e) {
+// 			res.status(500).send({
+// 				success: false,
+// 				results: `Error in ClaudeAi: ${e}}`,
+// 			});
+// 		}
+// 	} catch (e) {
+// 		res.status(500).send({
+// 			success: false,
+// 			message: `Error in sendAkylman: ${e}`,
+// 		});
+// 	}
+// };
+const prompt = `
 Вы — дружелюбный и профессиональный ассистент компании ElchoDev, основанной в 2025 году. 
 Ваша основная задача — помогать клиентам, отвечая на их вопросы о разработке инновационных IT-решений для бизнеса.
 
@@ -384,22 +430,57 @@ const sendElchoDev = async (req, res) => {
 и предлагайте связаться с менеджером для получения детальной консультации.
 
 Ваша цель — создать позитивное впечатление о компании ElchoDev и помочь клиентам найти подходящие решения для их бизнеса.
-`,
-                messages: filteredMessages,
-                model: "claude-3-5-haiku-20241022",
+`;
+const system = {
+    role: "user",
+    parts: [
+        {
+            text: prompt,
+        },
+    ],
+};
+let data = [];
+const sendElchoDev = async (req, res) => {
+    const { conversationHistory } = req.body;
+    if (!Array.isArray(conversationHistory)) {
+        res.status(400).send({ error: "conversationHistory должен быть массивом" });
+        return;
+    }
+    const transformedHistory = conversationHistory.map((item) => ({
+        role: item.role === "assistant" ? "model" : item.role,
+        parts: [
+            {
+                text: item.content,
+            },
+        ],
+    }));
+    data.push(system);
+    for (const conversationHistoryItem of transformedHistory) {
+        data.push(conversationHistoryItem);
+    }
+    try {
+        try {
+            const response = await geminiAI.models.generateContent({
+                model: "gemini-2.0-flash-001",
+                contents: data,
             });
-            const { content } = message;
+            data = [];
             res.status(201).send({
                 success: true,
                 results: {
-                    content,
+                    content: [
+                        {
+                            type: "text",
+                            text: response.text,
+                        },
+                    ],
                 },
             });
         }
         catch (e) {
             res.status(500).send({
                 success: false,
-                results: `Error in ClaudeAi: ${e}}`,
+                results: `Error in GeminiAI: ${e}}`,
             });
         }
     }

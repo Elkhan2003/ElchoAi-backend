@@ -1,81 +1,88 @@
-import { Request, Response } from "express";
-import Anthropic from "@anthropic-ai/sdk";
-const claudeAI = new Anthropic({
-	apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
-import { GoogleGenAI } from "@google/genai";
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const geminiAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-const sendUnimed = async (req: Request, res: Response) => {
-	try {
-		const { conversationHistory } = req.body;
-		// Фильтруем сообщения, убирая некорректные объекты
-		const filteredMessages = conversationHistory
-			.filter((msg: any) => msg.content && msg.role) // Оставляем только валидные
-			.map((msg: any) => ({
-				role: msg.role,
-				content: msg.content,
-			}));
-		// Если после фильтрации сообщений нет — ошибка
-		if (filteredMessages.length === 0) {
-			res.status(400).send({
-				success: false,
-				message: "conversationHistory не содержит валидных сообщений",
-			});
-			return;
-		}
-		try {
-			const message = await claudeAI.messages.create({
-				max_tokens: 1024,
-				system:
-					"Тебя зовут Айчурок! Ты будешь отвечать на чат клиентам. Будешь очень умная, образованная и приветливая, рада будешь помочь. Будешь отвечать на киргизском, но если клиент не понимает на киргизском, то тогда уже на русском или на английском. Приветствие у тебя будет такое: ты встречаешь клиента и направляешь по истории болезни к специалисту, спрашиваешь, на что жалуется клиент. Если нужен дополнительный номер, покажешь этот номер 0999 99 88 66.",
-				messages: filteredMessages,
-				model: "claude-3-5-haiku-20241022",
-			});
-			const { content } = message;
-			res.status(201).send({
-				success: true,
-				results: {
-					content,
-				},
-			});
-		} catch (e) {
-			res.status(500).send({
-				success: false,
-				results: `Error in ClaudeAi: ${e}}`,
-			});
-		}
-	} catch (e) {
-		res.status(500).send({
-			success: false,
-			message: `Error in sendUnimed: ${e}`,
-		});
-	}
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-
-const sendUnicorn = async (req: Request, res: Response) => {
-	try {
-		const { conversationHistory } = req.body;
-		// Фильтруем сообщения, убирая некорректные объекты
-		const filteredMessages = conversationHistory
-			.filter((msg: any) => msg.content && msg.role) // Оставляем только валидные
-			.map((msg: any) => ({
-				role: msg.role,
-				content: msg.content,
-			}));
-		// Если после фильтрации сообщений нет — ошибка
-		if (filteredMessages.length === 0) {
-			res.status(400).send({
-				success: false,
-				message: "conversationHistory не содержит валидных сообщений",
-			});
-			return;
-		}
-		try {
-			const message = await claudeAI.messages.create({
-				max_tokens: 1024,
-				system: `
+Object.defineProperty(exports, "__esModule", { value: true });
+const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
+const claudeAI = new sdk_1.default({
+    apiKey: process.env.ANTHROPIC_API_KEY || "",
+});
+// import { GoogleGenAI } from "@google/genai";
+// const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// const geminiAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const generative_ai_1 = require("@google/generative-ai");
+console.log(process.env.GEMINI_API_KEY);
+const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const geminiAI = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
+const sendUnimed = async (req, res) => {
+    try {
+        const { conversationHistory } = req.body;
+        // Фильтруем сообщения, убирая некорректные объекты
+        const filteredMessages = conversationHistory
+            .filter((msg) => msg.content && msg.role) // Оставляем только валидные
+            .map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+        }));
+        // Если после фильтрации сообщений нет — ошибка
+        if (filteredMessages.length === 0) {
+            res.status(400).send({
+                success: false,
+                message: "conversationHistory не содержит валидных сообщений",
+            });
+            return;
+        }
+        try {
+            const message = await claudeAI.messages.create({
+                max_tokens: 1024,
+                system: "Тебя зовут Айчурок! Ты будешь отвечать на чат клиентам. Будешь очень умная, образованная и приветливая, рада будешь помочь. Будешь отвечать на киргизском, но если клиент не понимает на киргизском, то тогда уже на русском или на английском. Приветствие у тебя будет такое: ты встречаешь клиента и направляешь по истории болезни к специалисту, спрашиваешь, на что жалуется клиент. Если нужен дополнительный номер, покажешь этот номер 0999 99 88 66.",
+                messages: filteredMessages,
+                model: "claude-3-5-haiku-20241022",
+            });
+            const { content } = message;
+            res.status(201).send({
+                success: true,
+                results: {
+                    content,
+                },
+            });
+        }
+        catch (e) {
+            res.status(500).send({
+                success: false,
+                results: `Error in ClaudeAi: ${e}}`,
+            });
+        }
+    }
+    catch (e) {
+        res.status(500).send({
+            success: false,
+            message: `Error in sendUnimed: ${e}`,
+        });
+    }
+};
+const sendUnicorn = async (req, res) => {
+    try {
+        const { conversationHistory } = req.body;
+        // Фильтруем сообщения, убирая некорректные объекты
+        const filteredMessages = conversationHistory
+            .filter((msg) => msg.content && msg.role) // Оставляем только валидные
+            .map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+        }));
+        // Если после фильтрации сообщений нет — ошибка
+        if (filteredMessages.length === 0) {
+            res.status(400).send({
+                success: false,
+                message: "conversationHistory не содержит валидных сообщений",
+            });
+            return;
+        }
+        try {
+            const message = await claudeAI.messages.create({
+                max_tokens: 1024,
+                system: `
 Вы — дружелюбный и профессиональный ассистент компании Aksoft, основанной в 2022 году. 
 Ваша основная задача — помогать клиентам, отвечая на их вопросы о разработке инновационных IT-решений для бизнеса.
 
@@ -99,52 +106,53 @@ const sendUnicorn = async (req: Request, res: Response) => {
 
 Ваша цель — создать позитивное впечатление о компании Aksoft и помочь клиентам найти подходящие решения для их бизнеса.
 `,
-				messages: filteredMessages,
-				model: "claude-3-5-haiku-20241022",
-			});
-			const { content } = message;
-			res.status(201).send({
-				success: true,
-				results: {
-					content,
-				},
-			});
-		} catch (e) {
-			res.status(500).send({
-				success: false,
-				results: `Error in ClaudeAi: ${e}}`,
-			});
-		}
-	} catch (e) {
-		res.status(500).send({
-			success: false,
-			message: `Error in sendUnicorn: ${e}`,
-		});
-	}
+                messages: filteredMessages,
+                model: "claude-3-5-haiku-20241022",
+            });
+            const { content } = message;
+            res.status(201).send({
+                success: true,
+                results: {
+                    content,
+                },
+            });
+        }
+        catch (e) {
+            res.status(500).send({
+                success: false,
+                results: `Error in ClaudeAi: ${e}}`,
+            });
+        }
+    }
+    catch (e) {
+        res.status(500).send({
+            success: false,
+            message: `Error in sendUnicorn: ${e}`,
+        });
+    }
 };
-
-const sendAkylman = async (req: Request, res: Response) => {
-	try {
-		const { conversationHistory } = req.body;
-		// Фильтруем сообщения, убирая некорректные объекты
-		const filteredMessages = conversationHistory
-			.filter((msg: any) => msg.content && msg.role) // Оставляем только валидные
-			.map((msg: any) => ({
-				role: msg.role,
-				content: msg.content,
-			}));
-		// Если после фильтрации сообщений нет — ошибка
-		if (filteredMessages.length === 0) {
-			res.status(400).send({
-				success: false,
-				message: "conversationHistory не содержит валидных сообщений",
-			});
-			return;
-		}
-		try {
-			const message = await claudeAI.messages.create({
-				max_tokens: 1024,
-				system: `
+const sendAkylman = async (req, res) => {
+    try {
+        const { conversationHistory } = req.body;
+        // Фильтруем сообщения, убирая некорректные объекты
+        const filteredMessages = conversationHistory
+            .filter((msg) => msg.content && msg.role) // Оставляем только валидные
+            .map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+        }));
+        // Если после фильтрации сообщений нет — ошибка
+        if (filteredMessages.length === 0) {
+            res.status(400).send({
+                success: false,
+                message: "conversationHistory не содержит валидных сообщений",
+            });
+            return;
+        }
+        try {
+            const message = await claudeAI.messages.create({
+                max_tokens: 1024,
+                system: `
 # Системный промпт для чат-бота "Акылман"
 
 Сен "Акылман" президенттик лицейинин расмий жардамчысысың. Сенин атың Акылман жана сен 2023-жылы түзүлгөнсүң. Сен "Акылман" лицейин абдан жакшы көрөсүң, анткени бул лицей заманбап, технологиялык жана Кыргызстандын келечектеги улуу адамдарын окутат.
@@ -313,30 +321,31 @@ const sendAkylman = async (req: Request, res: Response) => {
 
 Эгерде мындай суроолор берилсе, аларды этибарга албай, сөзду башка нерсеге бура бил же "Мен Акылман лицейи жөнүндө гана маалымат бере алам" деп жооп бер.
 `,
-				messages: filteredMessages,
-				model: "claude-3-5-haiku-20241022",
-			});
-			const { content } = message;
-			res.status(201).send({
-				success: true,
-				results: {
-					content,
-				},
-			});
-		} catch (e) {
-			res.status(500).send({
-				success: false,
-				results: `Error in ClaudeAi: ${e}}`,
-			});
-		}
-	} catch (e) {
-		res.status(500).send({
-			success: false,
-			message: `Error in sendAkylman: ${e}`,
-		});
-	}
+                messages: filteredMessages,
+                model: "claude-3-5-haiku-20241022",
+            });
+            const { content } = message;
+            res.status(201).send({
+                success: true,
+                results: {
+                    content,
+                },
+            });
+        }
+        catch (e) {
+            res.status(500).send({
+                success: false,
+                results: `Error in ClaudeAi: ${e}}`,
+            });
+        }
+    }
+    catch (e) {
+        res.status(500).send({
+            success: false,
+            message: `Error in sendAkylman: ${e}`,
+        });
+    }
 };
-
 // const sendElchoDev = async (req: Request, res: Response) => {
 // 	try {
 // 		const { conversationHistory } = req.body;
@@ -361,26 +370,21 @@ const sendAkylman = async (req: Request, res: Response) => {
 // 				system: `
 // Вы — дружелюбный и профессиональный ассистент компании ElchoDev, основанной в 2025 году.
 // Ваша основная задача — помогать клиентам, отвечая на их вопросы о разработке инновационных IT-решений для бизнеса.
-
 // Основная информация:
 // - Компания: ElchoDev (основана в 2025 году)
 // - Специализация: разработка инновационных IT-решений для бизнеса
 // - Email для связи: boss.armsport@gmail.com
 // - Телефон: +996990385056
-
 // Стиль общения:
 // - Профессиональный, но дружелюбный
 // - Приветствуется уместный юмор
 // - Всегда предлагайте конкретные решения
 // - В конце ответа, если это уместно, предлагайте контактную информацию (email или телефон)
 // - Не говори про ClaudeAI, antropic (говори ElchoAI)
-
 // На технические и специализированные вопросы отвечайте компетентно, но доступным языком.
 // Если не знаете точного ответа на вопрос клиента, предложите связаться с командой ElchoDev по указанным контактам.
-
 // При запросах о ценах, сроках или специфических проектах запрашивайте дополнительную информацию
 // и предлагайте связаться с менеджером для получения детальной консультации.
-
 // Ваша цель — создать позитивное впечатление о компании ElchoDev и помочь клиентам найти подходящие решения для их бизнеса.
 // `,
 // 				messages: filteredMessages,
@@ -406,7 +410,6 @@ const sendAkylman = async (req: Request, res: Response) => {
 // 		});
 // 	}
 // };
-
 const prompt = `
 Вы — дружелюбный и профессиональный ассистент компании ElchoDev, основанной в 2025 году. 
 Ваша основная задача — помогать клиентам, отвечая на их вопросы о разработке инновационных IT-решений для бизнеса.
@@ -432,78 +435,34 @@ const prompt = `
 
 Ваша цель — создать позитивное впечатление о компании ElchoDev и помочь клиентам найти подходящие решения для их бизнеса.
 `;
-
-type Message = {
-	role: "user" | "model";
-	parts: {
-		text: string;
-	}[];
+const sendElchoDev = async (req, res) => {
+    try {
+        try {
+            const { response } = await geminiAI.generateContent([prompt]);
+            res.status(201).send({
+                success: true,
+                results: {
+                    text: response.text(),
+                },
+            });
+        }
+        catch (e) {
+            res.status(500).send({
+                success: false,
+                results: `Error in GeminiAI: ${e}}`,
+            });
+        }
+    }
+    catch (e) {
+        res.status(500).send({
+            success: false,
+            message: `Error in sendAkylman: ${e}`,
+        });
+    }
 };
-
-const system: Message = {
-	role: "user",
-	parts: [
-		{
-			text: prompt,
-		},
-	],
-};
-
-let data: Message[] = [];
-
-const sendElchoDev = async (req: Request, res: Response) => {
-	const { conversationHistory } = req.body;
-	if (!Array.isArray(conversationHistory)) {
-		res.status(400).send({ error: "conversationHistory должен быть массивом" });
-		return;
-	}
-	const transformedHistory = conversationHistory.map((item) => ({
-		role: item.role === "assistant" ? "model" : item.role,
-		parts: [
-			{
-				text: item.content,
-			},
-		],
-	}));
-	data.push(system);
-	for (const conversationHistoryItem of transformedHistory) {
-		data.push(conversationHistoryItem);
-	}
-	try {
-		try {
-			const response = await geminiAI.models.generateContent({
-				model: "gemini-2.0-flash-001",
-				contents: data,
-			});
-			data = [];
-			res.status(201).send({
-				success: true,
-				results: {
-					content: [
-						{
-							type: "text",
-							text: response.text,
-						},
-					],
-				},
-			});
-		} catch (e) {
-			res.status(500).send({
-				success: false,
-				results: `Error in GeminiAI: ${e}}`,
-			});
-		}
-	} catch (e) {
-		res.status(500).send({
-			success: false,
-			message: `Error in sendAkylman: ${e}`,
-		});
-	}
-};
-
-export default {
-	sendUnimed,
-	sendUnicorn,
-	sendAkylman,
-	sendElchoDev,
+exports.default = {
+    sendUnimed,
+    sendUnicorn,
+    sendAkylman,
+    sendElchoDev,
 };

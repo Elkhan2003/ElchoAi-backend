@@ -3,9 +3,14 @@ import Anthropic from "@anthropic-ai/sdk";
 const claudeAI = new Anthropic({
 	apiKey: process.env.ANTHROPIC_API_KEY || "",
 });
-import { GoogleGenAI } from "@google/genai";
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const geminiAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+// import { GoogleGenAI } from "@google/genai";
+// const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// const geminiAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+import { GoogleGenerativeAI } from "@google/generative-ai";
+console.log(process.env.GEMINI_API_KEY!);
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const geminiAI = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
 
 const sendUnimed = async (req: Request, res: Response) => {
 	try {
@@ -433,58 +438,14 @@ const prompt = `
 Ваша цель — создать позитивное впечатление о компании ElchoDev и помочь клиентам найти подходящие решения для их бизнеса.
 `;
 
-type Message = {
-	role: "user" | "model";
-	parts: {
-		text: string;
-	}[];
-};
-
-const system: Message = {
-	role: "user",
-	parts: [
-		{
-			text: prompt,
-		},
-	],
-};
-
-let data: Message[] = [];
-
 const sendElchoDev = async (req: Request, res: Response) => {
-	const { conversationHistory } = req.body;
-	if (!Array.isArray(conversationHistory)) {
-		res.status(400).send({ error: "conversationHistory должен быть массивом" });
-		return;
-	}
-	const transformedHistory = conversationHistory.map((item) => ({
-		role: item.role === "assistant" ? "model" : item.role,
-		parts: [
-			{
-				text: item.content,
-			},
-		],
-	}));
-	data.push(system);
-	for (const conversationHistoryItem of transformedHistory) {
-		data.push(conversationHistoryItem);
-	}
 	try {
 		try {
-			const response = await geminiAI.models.generateContent({
-				model: "gemini-2.0-flash-001",
-				contents: data,
-			});
-			data = [];
+			const { response } = await geminiAI.generateContent([prompt]);
 			res.status(201).send({
 				success: true,
 				results: {
-					content: [
-						{
-							type: "text",
-							text: response.text,
-						},
-					],
+					text: response.text(),
 				},
 			});
 		} catch (e) {
