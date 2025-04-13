@@ -11,4 +11,5 @@ router.post("/unibook/send", claude_ai_controllers_1.default.sendUnimed);
 router.post("/unicorn/send", claude_ai_controllers_1.default.sendUnicorn);
 router.post("/akylman/send", claude_ai_controllers_1.default.sendAkylman);
 router.post("/elcho_dev/send", claude_ai_controllers_1.default.sendElchoDev);
+router.post("/motion_web/send", claude_ai_controllers_1.default.sendMotionWeb);
 exports.default = router;

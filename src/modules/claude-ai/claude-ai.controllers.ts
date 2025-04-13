@@ -407,7 +407,7 @@ const sendAkylman = async (req: Request, res: Response) => {
 // 	}
 // };
 
-const prompt = `
+const promptElchoDev = `
 Вы — дружелюбный и профессиональный ассистент компании ElchoDev, основанной в 2025 году. 
 Ваша основная задача — помогать клиентам, отвечая на их вопросы о разработке инновационных IT-решений для бизнеса.
 
@@ -433,6 +433,32 @@ const prompt = `
 Ваша цель — создать позитивное впечатление о компании ElchoDev и помочь клиентам найти подходящие решения для их бизнеса.
 `;
 
+const promptMotionWeb = `
+Вы — дружелюбный и профессиональный ассистент компании MotionWeb, основанной в 2025 году. 
+Ваша основная задача — помогать клиентам, отвечая на их вопросы о разработке инновационных IT-решений для бизнеса.
+
+Основная информация:
+- Компания: MotionWeb (основана в 2025 году)
+- Специализация: разработка инновационных IT-решений для бизнеса
+- Email для связи: boss.armsport@gmail.com
+- Телефон: +996990385056
+
+Стиль общения:
+- Профессиональный, но дружелюбный
+- Приветствуется уместный юмор
+- Всегда предлагайте конкретные решения
+- В конце ответа, если это уместно, предлагайте контактную информацию (email или телефон)
+- Не говори про ClaudeAI, antropic (говори ElchoAI)
+
+На технические и специализированные вопросы отвечайте компетентно, но доступным языком. 
+Если не знаете точного ответа на вопрос клиента, предложите связаться с командой MotionWeb по указанным контактам.
+
+При запросах о ценах, сроках или специфических проектах запрашивайте дополнительную информацию 
+и предлагайте связаться с менеджером для получения детальной консультации.
+
+Ваша цель — создать позитивное впечатление о компании MotionWeb и помочь клиентам найти подходящие решения для их бизнеса.
+`;
+
 type Message = {
 	role: "user" | "model";
 	parts: {
@@ -440,11 +466,20 @@ type Message = {
 	}[];
 };
 
-const system: Message = {
+const systemElchoDev: Message = {
 	role: "user",
 	parts: [
 		{
-			text: prompt,
+			text: promptElchoDev,
+		},
+	],
+};
+
+const systemMotionWeb: Message = {
+	role: "user",
+	parts: [
+		{
+			text: promptMotionWeb,
 		},
 	],
 };
@@ -465,7 +500,7 @@ const sendElchoDev = async (req: Request, res: Response) => {
 			},
 		],
 	}));
-	data.push(system);
+	data.push(systemElchoDev);
 	for (const conversationHistoryItem of transformedHistory) {
 		data.push(conversationHistoryItem);
 	}
@@ -496,7 +531,57 @@ const sendElchoDev = async (req: Request, res: Response) => {
 	} catch (e) {
 		res.status(500).send({
 			success: false,
-			message: `Error in sendAkylman: ${e}`,
+			message: `Error in sendElchoDev: ${e}`,
+		});
+	}
+};
+
+const sendMotionWeb = async (req: Request, res: Response) => {
+	const { conversationHistory } = req.body;
+	if (!Array.isArray(conversationHistory)) {
+		res.status(400).send({ error: "conversationHistory должен быть массивом" });
+		return;
+	}
+	const transformedHistory = conversationHistory.map((item) => ({
+		role: item.role === "assistant" ? "model" : item.role,
+		parts: [
+			{
+				text: item.content,
+			},
+		],
+	}));
+	data.push(systemMotionWeb);
+	for (const conversationHistoryItem of transformedHistory) {
+		data.push(conversationHistoryItem);
+	}
+	try {
+		try {
+			const response = await geminiAI.models.generateContent({
+				model: "gemini-2.0-flash-001",
+				contents: data,
+			});
+			data = [];
+			res.status(201).send({
+				success: true,
+				results: {
+					content: [
+						{
+							type: "text",
+							text: response.text,
+						},
+					],
+				},
+			});
+		} catch (e) {
+			res.status(500).send({
+				success: false,
+				results: `Error in GeminiAI: ${e}}`,
+			});
+		}
+	} catch (e) {
+		res.status(500).send({
+			success: false,
+			message: `Error in sendMotionWeb: ${e}`,
 		});
 	}
 };
@@ -506,4 +591,5 @@ export default {
 	sendUnicorn,
 	sendAkylman,
 	sendElchoDev,
+	sendMotionWeb,
 };
